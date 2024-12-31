@@ -9,8 +9,9 @@
             </a>
         </div>
 
-        <div class="h">
-            PlaceHolder for inserting datasets    
+        <div class="grow mx-2">
+            <hr class="mb-2">
+            <span class="font-large text-base text-gray-800 dark:text-gray-200">Available Datasets: </span>  
         </div>
 
         <div class="w-full h-12 flex flex-row align-bottom justify-between rounded-t-lg "> 
