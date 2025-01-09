@@ -1,6 +1,6 @@
 <nav x-data="{ open: false }" class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
 
-    <div class="h-full min-w-64 max-w-64 flex flex-col justify-between">
+    <div class="h-full min-w-64 max-w-64 flex flex-col justify-even">
 
         <div class="w-full h-auto flex justify-center">
             <a href="{{ route('dashboard') }}">
@@ -13,6 +13,8 @@
             <hr class="mb-2">
             <span class="font-large text-base text-gray-800 dark:text-gray-200">Available Datasets: </span>  
         </div>
+
+        <x-upload-dataset></x-upload-dataset>
 
         <div class="w-full h-12 flex flex-row align-bottom justify-between rounded-t-lg "> 
             <a :href="route('profile.edit')" class="h-12 w-4/5 block text-decoration-none rounded-tr-lg hover:bg-gray-200 hover:dark:bg-gray-700 p-4 align-baseline 
