@@ -15,11 +15,18 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('user-count');
             $table->bigInteger('private-count');
-            $table->bigInteger('oos-count');
             $table->boolean('is-anon');
             $table->boolean('is-global');
-            $table->string('file-location');
+
+            $table->string('file-name');
+            $table->string('mime-type');
+            $table->string('path');
+            $table->string('disk')->default('local');
+            $table->string('file-hash', 64)->unique();
+            $table->unsignedBigInteger('size');
+
             $table->timestamps();
+
         });
     }
 

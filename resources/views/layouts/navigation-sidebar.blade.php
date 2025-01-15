@@ -14,10 +14,10 @@
             <span class="font-large text-base text-gray-800 dark:text-gray-200">Available Datasets: </span>  
         </div>
 
-        <x-upload-dataset></x-upload-dataset>
+        <livewire:upload-form/>
 
         <div class="w-full h-12 flex flex-row align-bottom justify-between rounded-t-lg "> 
-            <a :href="route('profile.edit')" class="h-12 w-4/5 block text-decoration-none rounded-tr-lg hover:bg-gray-200 hover:dark:bg-gray-700 p-4 align-baseline 
+            <a href="{{ route('profile.edit') }}" class="h-12 w-4/5 block text-decoration-none rounded-tr-lg hover:bg-gray-200 hover:dark:bg-gray-700 p-4 align-baseline 
                                                     inline-flex items-center border-gray-200 dark:border-gray-700 border">
                 <ion-icon name="person-outline" class="font-large text-base text-gray-800 dark:text-gray-200 mr-1"></ion-icon>
                 <span class="font-medium text-base text-gray-800 dark:text-gray-200" >{{ Auth::user()->name }}</span>

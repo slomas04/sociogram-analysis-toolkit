@@ -9,8 +9,5 @@ use Illuminate\Support\Facades\Redirect;
 
 class DatabaseController extends Controller
 {
-    public function store(): RedirectResponse{
 
-        return Redirect::to('/');
-    }
 }
