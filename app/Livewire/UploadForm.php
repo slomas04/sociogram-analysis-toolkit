@@ -4,10 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Illuminate\Support\Facades\Storage;
 use App\Models\Dataset;
-use Illuminate\Validation\Rules\File;
-use Illuminate\Support\Facades\Validator;
 
 class UploadForm extends Component
 {
@@ -23,12 +20,10 @@ class UploadForm extends Component
         'isGlobal' => 'boolean', 
     ];
 
-    // Handle form submission
     public function submit()
     {
         $this->validate();
 
-        // Set the upload state
         $this->isUploading = true;
 
         $file = $this->file;
@@ -52,10 +47,7 @@ class UploadForm extends Component
         $userCount = count($decodedJson['users']);
         $isAnonymous = $decodedJson['anonymous'];
 
-        // Store the file
         $path = $file->storeAs('datasets', $file->getClientOriginalName(), 'public');
-
-        // Save data to the database
         Dataset::query()->create([
             'user-count'    => $userCount,
             'private-count' => $privateAccountCount,
@@ -65,20 +57,18 @@ class UploadForm extends Component
             'mime-type'     => $file->getClientMimeType(),
             'path'          => $path,
             'disk'          => 'local',
-            'file_hash'     => hash_file('md5', storage_path('app/public/' . $path)),
             'size'          => $file->getSize(),
         ]);
 
         session()->flash('message', 'File uploaded successfully!');
         $this->reset();
-        $this->emit('closeModal');
 
         $this->isUploading = false;
     }
 
     public function resetFields()
     {
-        $this->reset(['file', 'message', 'isGlobal']); // Reset selected properties
+        $this->reset(['file', 'message', 'isGlobal']); 
     }
 
     public function render()
@@ -114,7 +104,7 @@ class UploadForm extends Component
                 return ['error' => 'User must have a valid "id" string.'];
             }
     
-            if (!isset($user['username']) || !is_string($user['username'])) {
+            if (isset($user['username']) && !is_string($user['username']) && $user['username'] !== null) {
                 return ['error' => 'User must have a valid "username" string.'];
             }
     
@@ -134,15 +124,15 @@ class UploadForm extends Component
                 return ['error' => 'User must have a valid "is_private" boolean.'];
             }
     
-            if (!isset($user['bio']) || !is_string($user['bio'])) {
-                return ['error' => 'User must have a valid "bio" string.'];
+            if (isset($user['bio']) && !is_string($user['bio']) && $user['bio'] !== null) {
+                return ['error' => 'User must have a valid "bio" string or null.'];
             }
     
-            if (!isset($user['full_name']) || !is_string($user['full_name'])) {
+            if (isset($user['full_name']) && !is_string($user['full_name']) && $user['full_name'] !== null) {
                 return ['error' => 'User must have a valid "full_name" string.'];
             }
     
-            if (!isset($user['post_count']) || !is_int($user['post_count'])) {
+            if (isset($user['post_count']) && !is_int($user['post_count']) && $user['post_count'] !== null) {
                 return ['error' => 'User must have a valid "post_count" integer.'];
             }
 

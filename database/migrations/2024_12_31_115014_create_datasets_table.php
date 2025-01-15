@@ -18,11 +18,10 @@ return new class extends Migration
             $table->boolean('is-anon');
             $table->boolean('is-global');
 
-            $table->string('file-name');
+            $table->string('file-name')->unique();
             $table->string('mime-type');
             $table->string('path');
             $table->string('disk')->default('local');
-            $table->string('file-hash', 64)->unique();
             $table->unsignedBigInteger('size');
 
             $table->timestamps();

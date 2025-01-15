@@ -31,12 +31,11 @@
                 <label for="isGlobal" class="text-sm text-gray-600 dark:text-gray-400">Make this dataset global</label>
             </div>
 
-            <!-- Error or success message -->
-            @if ($message)
-                <div class="text-red-500 mt-4">
-                    {{ $message }}
-                </div>
-            @endif
+            @isset($message)
+            <div class="text-red-500 mt-4">
+                {{ $message }}
+            </div>
+            @endisset
 
             @if (session()->has('message'))
                 <div class="text-green-500 mt-4">
@@ -44,7 +43,6 @@
                 </div>
             @endif
 
-            <!-- Loading indicator -->
             @if ($isUploading)
                 <div class="mt-4 text-gray-500">Uploading...</div>
             @endif
