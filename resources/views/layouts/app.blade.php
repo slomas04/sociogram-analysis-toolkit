@@ -15,7 +15,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-row min-w-screen overflow-hidden">
+        <div class="min-h-screen h-full bg-gray-100 dark:bg-gray-900 flex flex-row min-w-screen overflow-hidden">
             @include('layouts.navigation-sidebar')
             
             <!-- Page Content -->

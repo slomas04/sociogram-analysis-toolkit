@@ -11,7 +11,8 @@
 
         <div class="grow mx-2">
             <hr class="mb-2">
-            <span class="font-large text-base text-gray-800 dark:text-gray-200">Available Datasets: </span>  
+            <span class="font-large text-base text-gray-800 dark:text-gray-200">Available Datasets: </span> 
+            <livewire:dataset-list/>
         </div>
 
         <livewire:upload-form/>

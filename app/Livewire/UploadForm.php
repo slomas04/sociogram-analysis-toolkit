@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\Dataset;
+use Illuminate\Support\Facades\Auth;
 
 class UploadForm extends Component
 {
@@ -49,6 +50,7 @@ class UploadForm extends Component
 
         $path = $file->storeAs('datasets', $file->getClientOriginalName(), 'public');
         Dataset::query()->create([
+            'user-id'       => Auth::id(),
             'user-count'    => $userCount,
             'private-count' => $privateAccountCount,
             'is-anon'       => $isAnonymous,
@@ -64,6 +66,7 @@ class UploadForm extends Component
         $this->reset();
 
         $this->isUploading = false;
+        $this->dispatch('dataset-created');
     }
 
     public function resetFields()

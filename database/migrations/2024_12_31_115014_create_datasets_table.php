@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('datasets', function (Blueprint $table) {
             $table->id();
+
+            $table->unsignedBigInteger('user-id');
+            $table->foreign('user-id')->references('id')->on('users')->onDelete('cascade');
+
             $table->bigInteger('user-count');
             $table->bigInteger('private-count');
             $table->boolean('is-anon');
