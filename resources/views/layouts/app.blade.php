@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="base_url" content="{{ URL::to('/') }}">
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
@@ -15,13 +16,14 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen h-full bg-gray-100 dark:bg-gray-900 flex flex-row min-w-screen overflow-hidden">
-            @include('layouts.navigation-sidebar')
+        <div class="min-h-screen h-full bg-gray-100 dark:bg-gray-900 w-screen overflow-hidden flex">
+            <div class="min-w-64 max-w-64 w-64 bg-gray-800">
+                @include('layouts.navigation-sidebar')
+            </div>
             
-            <!-- Page Content -->
-            <main>
+            <div class="flex-1 min-h-screen">
                 {{ $slot }}
-            </main>
+            </div>
         </div>
     </body>
 </html>

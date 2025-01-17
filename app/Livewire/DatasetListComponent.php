@@ -11,8 +11,10 @@ class DatasetListComponent extends Component
     public $isAnonymous;
     public $isGlobal;
     public $privateCount;
+    public $datasetPath;
 
     public function mount($dataset = null){
+        $this->datasetPath = $dataset['path'];
         $tmpName = substr($dataset['file-name'], strrpos($dataset['file-name'], '/'));
         $this->datasetName = $tmpName;
         $this->userCount = $dataset['user-count'];
@@ -24,5 +26,9 @@ class DatasetListComponent extends Component
     public function render()
     {
         return view('livewire.dataset-list-component');
+    }
+
+    public function broadcastClickGraph(){
+        $this->dispatch('showDataset', path: $this->datasetPath);
     }
 }
