@@ -2,7 +2,6 @@
 
 namespace App\Livewire;
 
-use Livewire\Attributes\On;
 use Livewire\Component;
 
 class SigmaHandler extends Component
@@ -15,17 +14,10 @@ class SigmaHandler extends Component
         return view('livewire.sigma-handler');
     }
 
-    #[On('showDataset')]
-    public function loadGraph($path){
-        /*
-        $this->overlayMessage = "Loading dataset...";
-        $this->showOverlay = true;
-
-        sleep(3);
-
-        $this->showOverlay = false;
-        $this->overlayMessage = "Select a dataset to start";
-        */
-        
+    public function loadGraph($path)
+    {
+        // Dispatch an event to JavaScript with the dataset path
+        $this->dispatchBrowserEvent('graphDataReady', ['path' => $path]);
     }
 }
+
