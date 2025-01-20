@@ -11,7 +11,6 @@ sigmaInstance.getCamera().setState({
     angle: 0.2,
 });
 
-// Listen for Livewire init event
 document.addEventListener('livewire:init', () => {
     Livewire.on('showDataset', (event) => {
         let filePath = event.path;
@@ -24,15 +23,13 @@ document.addEventListener('livewire:init', () => {
 
         graphPromise.then(
             (returnGraph) => {
-                // Ensure Sigma graph is correctly set and refreshed
                 sigmaInstance.setGraph(returnGraph);
                 sigmaInstance.refresh();
 
-                // Reinitialize graph after Livewire updates to make sure the graph renders
                 setTimeout(() => {
                     console.log("Re-rendering Sigma graph...");
                     sigmaInstance.refresh();
-                }, 100); // Adding a small delay to allow for Livewire DOM updates
+                }, 100);
             },
             (returnError) => {
                 console.log(returnError);
@@ -41,9 +38,7 @@ document.addEventListener('livewire:init', () => {
     });
 });
 
-// Livewire event to handle when Livewire updates the DOM
 document.addEventListener('livewire:update', () => {
     console.log("Livewire update detected. Re-rendering Sigma graph...");
-    // Re-render the graph when Livewire updates the component
     sigmaInstance.refresh();
 });
