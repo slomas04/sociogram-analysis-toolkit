@@ -1,11 +1,9 @@
 <div class="justify-center full-width">
-    <!-- Upload button -->
     <x-button-cheap x-data="" x-on:click.prevent="$dispatch('open-modal', 'upload-file-modal')">
         <ion-icon wire:ignore name="cloud-upload-outline" class="font-large text-base text-gray-800 dark:text-gray-200 mr-1"></ion-icon>
         <span class="font-medium text-base text-gray-800 dark:text-gray-200">Upload Dataset</span>
     </x-button-cheap>
 
-    <!-- Modal -->
     <x-modal name="upload-file-modal" focusable>
         <form wire:submit.prevent="submit" class="p-6">
             @csrf
@@ -19,13 +17,11 @@
                 {{ __('Database file must be acquired from the companion scraping tool.') }}
             </p>
 
-            <!-- File Input -->
             <div class="mt-4">
                 <input type="file" wire:model="file" class="form-input mt-1 block w-full">
                 @error('file') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
             </div>
 
-            <!-- Global option -->
             <div class="mt-4 flex items-center">
                 <input type="checkbox" wire:model="isGlobal" id="isGlobal" class="mr-2">
                 <label for="isGlobal" class="text-sm text-gray-600 dark:text-gray-400">Make this dataset global</label>
@@ -53,7 +49,6 @@
                     <span class="font-medium text-base text-gray-800 dark:text-gray-200">Close</span>
                 </x-button-cheap>
 
-                <!-- Submit Button with wire:loading support -->
                 <x-button-cheap type="submit" wire:loading.attr="disabled">
                     <ion-icon wire:ignore name="cloud-upload-outline" class="font-large text-base text-gray-800 dark:text-gray-200 mr-1"></ion-icon>
                     <span class="font-medium text-base text-gray-800 dark:text-gray-200">Upload</span>

@@ -26,6 +26,21 @@ function randomColour() {
     return "#" + Math.floor(Math.random() * 16777215).toString(16);
 }
 
+// Hashes a string into a valid colour
+// function taken directly from https://stackoverflow.com/questions/3426404/create-a-hexadecimal-colour-based-on-a-string-with-javascript
+function stringToColour(str){
+    let hash = 0;
+    str.split('').forEach(char => {
+      hash = char.charCodeAt(0) + ((hash << 5) - hash)
+    })
+    let colour = '#'
+    for (let i = 0; i < 3; i++) {
+      const value = (hash >> (i * 8)) & 0xff
+      colour += value.toString(16).padStart(2, '0')
+    }
+    return colour
+  }
+
 function randomCoord() {
     return (Math.random() * 1000) - 500;
 }
@@ -46,9 +61,10 @@ export async function generateGraph(path) {
     var currentUsers = [];
 
     jsonData['users'].forEach(function (user) {
+        var userColour = stringToColour(user['id']);
         if (!currentUsers.includes(user['id'])) {
             var nodeLabel = anon ? user['id'] : user['username'];
-            graph.addNode(user['id'], { label: nodeLabel, x: randomCoord(), y: randomCoord(), size: 2, color: randomColour() });
+            graph.addNode(user['id'], { label: nodeLabel, x: randomCoord(), y: randomCoord(), size: 2, color: userColour });
             currentUsers.push(user['id']);
         }
 
@@ -56,11 +72,11 @@ export async function generateGraph(path) {
             user['following'].forEach(function (fUser) {
                 if (!currentUsers.includes(fUser[0])) {
                     var followNodeLabel = anon ? fUser[0] : fUser[1];
-                    graph.addNode(fUser[0], { label: followNodeLabel, x: randomCoord(), y: randomCoord(), size: 2, color: randomColour() });
+                    graph.addNode(fUser[0], { label: followNodeLabel, x: randomCoord(), y: randomCoord(), size: 2, color: stringToColour(fUser[0]) });
                     currentUsers.push(fUser[0]);
                 }
                 if (!graph.hasEdge(user['id'], fUser[0])) {
-                    graph.addEdge(user['id'], fUser[0], { type: "arrow" });
+                    graph.addEdge(user['id'], fUser[0], { type: "arrow", color: userColour});
                 }
             });
         }

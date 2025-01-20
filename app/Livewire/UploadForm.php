@@ -17,7 +17,7 @@ class UploadForm extends Component
     public $isUploading = false; 
 
     protected $rules = [
-        'file' => 'required|file|mimes:json|max:10240', // Max 10MB for the uploaded file
+        'file' => 'required|file|mimes:json|max:40960', // Max 10MB for the uploaded file
         'isGlobal' => 'boolean', 
     ];
 
