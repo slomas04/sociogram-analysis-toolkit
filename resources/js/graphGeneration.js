@@ -5,7 +5,14 @@ import { circular } from "graphology-layout";
 import FA2Layout from "graphology-layout-forceatlas2/worker";
 import "https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js";
 import { animateNodes } from "sigma/utils";
-import noverlap from "graphology-layout-noverlap";
+import NoverlapLayout from 'graphology-layout-noverlap/worker';
+
+// Global variables for state management
+let cancelCurrentAnimation = null;
+let fa2Layout = null;
+let noverlapLayout = null;
+let fa2Worker = null;
+let noverlapWorker = null;
 
 async function getJsonData(url) {
     const response = await fetch(url);
@@ -77,37 +84,23 @@ export async function generateGraph(path) {
 // Separate function for the management of layouts
 // Much of this is based on sigma.js's 'layouts example' storybook
 function layoutManagement(graph){
-    let cancelCurrentAnimation = null;
-
     const sensibleSettings = forceAtlas2.inferSettings(graph);
-    const fa2Layout = new FA2Layout(graph, {
+    fa2Layout = new FA2Layout(graph, {
         settings: sensibleSettings,
     });
-
-    const FA2StartLabel = document.getElementById("fa2_start");
-    const FA2StopLabel = document.getElementById("fa2_stop");
-    function stopFA2() {
-        fa2Layout.stop();
-        FA2StartLabel.style.display = "flex";
-        FA2StopLabel.style.display = "none";
-    }
-    function startFA2() {
-        if (cancelCurrentAnimation) cancelCurrentAnimation();
-        fa2Layout.start();
-        FA2StartLabel.style.display = "none";
-        FA2StopLabel.style.display = "flex";
-    }
+    fa2Worker = new fa2LayoutWorker();
+    noverlapLayout = new NoverlapLayout(graph, {maxIterations: 50, settings: {
+        speed: 50, 
+        expansion: 1.1,
+        margin: 5,
+        ration: 2.0,
+    }});
+    noverlapWorker = new NoverlapWorker();
     
-    function toggleFA2Layout() {
-        if (fa2Layout.isRunning()) {
-          stopFA2();
-        } else {
-          startFA2();
-        }
-    }
 
     function randomiseLayout(){
-        if (fa2Layout.isRunning()) stopFA2();
+        if (fa2Layout.isRunning()) fa2Worker.stopFA2();
+        if (noverlapLayout.isRunning()) noverlapWorker.stopNoverlap();
         cancelCurrentAnimation = null;
 
         const randomPositions = {}
@@ -118,29 +111,82 @@ function layoutManagement(graph){
     }
 
     function circularLayout(){
-        if (fa2Layout.isRunning()) stopFA2();
+        if (fa2Layout.isRunning()) fa2Worker.stopFA2();
+        if (noverlapLayout.isRunning()) noverlapWorker.stopNoverlap();
         cancelCurrentAnimation = null;
 
         const circularPositions = circular(graph, { scale: 100 });
         cancelCurrentAnimation = animateNodes(graph, circularPositions, { duration: 2000, easing: "linear" });
     }
 
-    function runNoverlap(){
-        if (fa2Layout.isRunning()) stopFA2();
-        cancelCurrentAnimation = null;
-
-        const positions = noverlap(graph, {maxIterations: 50});
-        cancelCurrentAnimation = animateNodes(graph, positions, { duration: 2000, easing: "linear" });
-    }
     
     const randomButton = document.getElementById("layout_random");
     randomButton.addEventListener("click", randomiseLayout);
     const circleButton = document.getElementById("layout_circular");
     circleButton.addEventListener("click", circularLayout);
-    const fa2button = document.getElementById("layout_fa2");
-    fa2button.addEventListener("click", toggleFA2Layout);
-    const noverlapButton = document.getElementById("layout_noverlap");
-    noverlapButton.addEventListener("click", runNoverlap)
 
     return graph;
 }
+
+class fa2LayoutWorker {
+    stopFA2() {
+        fa2Layout.stop();
+        this.FA2StartLabel.style.display = "flex";
+        this.FA2StopLabel.style.display = "none";
+    }
+
+    startFA2() {
+        noverlapWorker.stopNoverlap();
+        if (cancelCurrentAnimation) cancelCurrentAnimation();
+        fa2Layout.start();
+        this.FA2StartLabel.style.display = "none";
+        this.FA2StopLabel.style.display = "flex";
+    }
+
+    toggleFA2Layout = () => {
+        if (fa2Layout.isRunning()) {
+            this.stopFA2();
+        } else {
+            this.startFA2();
+        }
+    }
+
+    constructor() {
+        this.FA2StartLabel = document.getElementById("fa2_start");
+        this.FA2StopLabel = document.getElementById("fa2_stop");
+        this.fa2button = document.getElementById("layout_fa2");
+        this.fa2button.addEventListener("click", this.toggleFA2Layout); 
+    }
+}
+
+class NoverlapWorker {
+    stopNoverlap() {
+        noverlapLayout.stop();
+        this.NoverlapStartLabel.style.display = "flex";
+        this.NoverlapStopLabel.style.display = "none";
+    }
+
+    startNoverlap() {
+        fa2Worker.stopFA2();
+        if (cancelCurrentAnimation) cancelCurrentAnimation();
+        noverlapLayout.start();
+        this.NoverlapStartLabel.style.display = "none";
+        this.NoverlapStopLabel.style.display = "flex";
+    }
+
+    toggleNoverlapLayout = () => {
+        if (noverlapLayout.isRunning()) {
+            this.stopNoverlap();
+        } else {
+            this.startNoverlap();
+        }
+    }
+
+    constructor() {
+        this.NoverlapStartLabel = document.getElementById("noverlap_start");
+        this.NoverlapStopLabel = document.getElementById("noverlap_stop");
+        this.noverlapbutton = document.getElementById("layout_noverlap");
+        this.noverlapbutton.addEventListener("click", this.toggleNoverlapLayout); 
+    }
+}
+
