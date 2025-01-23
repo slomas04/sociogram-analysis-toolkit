@@ -5,7 +5,7 @@ import Graph from "graphology";
 import Sigma from "sigma";
 import { generateGraph } from "./graphGeneration.js";
 
-const sigmaInstance = new Sigma(new Graph({ multi: true }), document.getElementById("container"));
+export const sigmaInstance = new Sigma(new Graph({ multi: false }), document.getElementById("container"));
 
 sigmaInstance.getCamera().setState({
     angle: 0.2,
@@ -30,6 +30,19 @@ document.addEventListener('livewire:init', () => {
                     console.log("Re-rendering Sigma graph...");
                     sigmaInstance.refresh();
                 }, 100);
+
+                const dispBox = document.getElementById("userDispbox")
+
+                sigmaInstance.on("enterNode", ({ node }) => {
+                    console.log(returnGraph.getNodeAttributes(node));
+                    Livewire.dispatch('update-userbox', returnGraph.getNodeAttributes(node));
+                    dispBox.style.display = "absolute";
+
+                });
+
+                sigmaInstance.on("leaveNode", () => {
+                    dispBox.style.display = "none";
+                });
             },
             (returnError) => {
                 console.log(returnError);

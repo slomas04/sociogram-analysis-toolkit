@@ -1,11 +1,13 @@
 // Handles generation of graphs given a path
+import "https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js";
 import Graph from "graphology";
 import forceAtlas2 from "graphology-layout-forceatlas2";
 import { circular } from "graphology-layout";
-import FA2Layout from "graphology-layout-forceatlas2/worker";
-import "https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js";
-import { animateNodes } from "sigma/utils";
+import FA2Layout from "graphology-layout-forceatlas2/worker"
 import NoverlapLayout from 'graphology-layout-noverlap/worker';
+import { animateNodes } from "sigma/utils";
+import { sortInDegree, sortOutDegree, sortBetween, sortClose, sortDegree, sortEigen, sortPagerank } from "./metricEvaluation.js";
+
 
 // Global variables for state management
 let cancelCurrentAnimation = null;
@@ -46,7 +48,7 @@ function randomCoord() {
 }
 
 export async function generateGraph(path) {
-    const graph = new Graph({  });
+    let graph = new Graph({  });
     const url = document.getElementsByName('base_url')[0].getAttribute('content') + "/storage/" + path;
     
     let jsonData;
@@ -82,17 +84,26 @@ export async function generateGraph(path) {
         }
     });
 
-    graph.forEachNode(node => {
-        graph.mergeNodeAttributes(node, {
-            size: graph.inDegree(node) * 2,
-          });
-    });
-
     graph.forEachNode( node => {
         if (graph.inDegree(node) == 1 && graph.outDegree(node) == 0) {
             graph.dropNode(node);
         }
     });
+
+    // Connect proper attributes to each node (this is very slow)
+    graph.forEachNode( node => {
+        const attributes = jsonData['users'].find(user => {
+            return user.id == node;
+        })
+        if (attributes != null){
+            if (attributes.hasOwnProperty("following")){
+                delete attributes.following;
+            }
+            graph.mergeNodeAttributes(node, attributes);
+        }
+    });
+
+    sortInDegree(graph);
 
     return layoutManagement(graph);
 }
@@ -101,9 +112,18 @@ export async function generateGraph(path) {
 // Much of this is based on sigma.js's 'layouts example' storybook
 function layoutManagement(graph){
     const sensibleSettings = forceAtlas2.inferSettings(graph);
+    console.log(sensibleSettings);
     fa2Layout = new FA2Layout(graph, {
-        settings: sensibleSettings,
+        settings: {
+            barnesHutOptimize: false,
+            adjustSizes: false,
+            gravity: 0.01,
+            scalingRatio: 10,
+            slowDown: 5,
+            strongGravityMode: false,
+        },
     });
+
     fa2Worker = new fa2LayoutWorker();
     noverlapLayout = new NoverlapLayout(graph, {maxIterations: 50, settings: {
         speed: 50, 
@@ -140,6 +160,22 @@ function layoutManagement(graph){
     randomButton.addEventListener("click", randomiseLayout);
     const circleButton = document.getElementById("layout_circular");
     circleButton.addEventListener("click", circularLayout);
+
+    const inDegreeButton = document.getElementById("metric_indegree");
+    const outDegreeButton = document.getElementById("metric_outdegree");
+    const betweenButton = document.getElementById("metric_between");
+    const closeMetricButton = document.getElementById("metric_close");
+    const degreeButton = document.getElementById("metric_degree");
+    const eigenButton = document.getElementById("metric_eigen");
+    const pagerankButton = document.getElementById("metric_pagerank");
+
+    inDegreeButton.addEventListener("click", () => {sortInDegree(graph);});
+    outDegreeButton.addEventListener("click", () => {sortOutDegree(graph);});
+    betweenButton.addEventListener("click", () => {sortBetween(graph);});
+    closeMetricButton.addEventListener("click", () => {sortClose(graph);});
+    degreeButton.addEventListener("click", () => { sortDegree(graph); });
+    eigenButton.addEventListener("click", () => { sortEigen(graph); });
+    pagerankButton.addEventListener("click", () => {sortPagerank(graph);});
 
     return graph;
 }

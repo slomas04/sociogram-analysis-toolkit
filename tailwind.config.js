@@ -18,4 +18,9 @@ export default {
     },
 
     plugins: [forms],
+    variants:{
+        extend:{
+            display:["group-hover"],
+        },
+    },
 };
