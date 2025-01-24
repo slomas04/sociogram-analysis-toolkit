@@ -12,6 +12,7 @@ class DatasetListComponent extends Component
     public $isGlobal;
     public $privateCount;
     public $datasetPath;
+    public $hasBeenClicked = false;
 
     public function mount($dataset = null){
         $this->datasetPath = $dataset['path'];

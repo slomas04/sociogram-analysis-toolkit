@@ -7,6 +7,7 @@ import FA2Layout from "graphology-layout-forceatlas2/worker"
 import NoverlapLayout from 'graphology-layout-noverlap/worker';
 import { animateNodes } from "sigma/utils";
 import { sortInDegree, sortOutDegree, sortBetween, sortClose, sortDegree, sortEigen, sortPagerank } from "./metricEvaluation.js";
+import { sigmaInstance } from "./app.js";
 
 
 // Global variables for state management
@@ -15,6 +16,11 @@ let fa2Layout = null;
 let noverlapLayout = null;
 let fa2Worker = null;
 let noverlapWorker = null;
+export let suggestions = null;
+let graph = null;
+export let selectedNode = null;
+export let hoveredNode = null;
+export let hoveredNeighbors = null;
 
 async function getJsonData(url) {
     const response = await fetch(url);
@@ -28,9 +34,22 @@ function randomColour() {
     return "#" + Math.floor(Math.random() * 16777215).toString(16);
 }
 
+export function setHoveredNode(val){
+    if (val == null){
+        hoveredNode = null;
+        hoveredNeighbors = null;
+    } else {
+        hoveredNode = val;
+        hoveredNeighbors = new Set(graph.neighbors(val)); 
+    }
+    sigmaInstance.refresh({
+        skipIndexation: true,
+      });
+}
+
 // Hashes a string into a valid colour
 // function taken directly from https://stackoverflow.com/questions/3426404/create-a-hexadecimal-colour-based-on-a-string-with-javascript
-function stringToColour(str){
+export function stringToColour(str){
     let hash = 0;
     str.split('').forEach(char => {
       hash = char.charCodeAt(0) + ((hash << 5) - hash)
@@ -48,7 +67,7 @@ function randomCoord() {
 }
 
 export async function generateGraph(path) {
-    let graph = new Graph({  });
+    graph = new Graph({  });
     const url = document.getElementsByName('base_url')[0].getAttribute('content') + "/storage/" + path;
     
     let jsonData;
@@ -104,6 +123,16 @@ export async function generateGraph(path) {
     });
 
     sortInDegree(graph);
+
+    const searchBox = document.getElementById("searchbox");
+
+    searchBox.addEventListener("input", () => {
+        setSearchQuery(searchBox.value || "");
+    });
+
+    searchBox.addEventListener("blur", () => {
+        setSearchQuery("");
+    });
 
     return layoutManagement(graph);
 }
@@ -242,3 +271,34 @@ class NoverlapWorker {
     }
 }
 
+function setSearchQuery(query){
+    if(query){
+        query = query.toLowerCase();
+        selectedNode = null;
+
+        // Taken from https://www.sigmajs.org/storybook/?path=/story/use-reducers--story
+        var ts = graph.nodes()
+        .map((n) => ({ id: n, label: graph.getNodeAttribute(n, "label")}))
+        .filter(({ label }) => label.toLowerCase().includes(query));
+
+        // ditto
+        if (ts.length === 1 && ts[0].label === query) {
+            selectedNode = ts[0].id;
+            suggestions = null;
+
+            const nodePosition = sigmaInstance.getNodeDisplayData(selectedNode);
+            sigmaInstance.getCamera().animate(nodePosition, {
+            duration: 500,
+            });
+        } else {
+            selectedNode = undefined;
+            suggestions = new Set(ts.map(({ id }) => id));
+        }
+    } else {
+        selectedNode = null;
+        suggestions = null;
+    }
+    sigmaInstance.refresh({
+        skipIndexation: true,
+      });
+}

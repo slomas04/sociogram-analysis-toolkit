@@ -37,17 +37,23 @@
                         Circular Layout
                     </span>
                 </button>
+
+                
+            </div>
+
+            <div class="absolute w-72 right-0.5 top-16 flex flex-col px-2 z-10"> 
+                <input id="searchbox" placeholder="Search for a node..." class="rounded-md text-gray-800 dark:text-gray-200 border border-2-0 border-gray-800 dark:border-gray-200 bg-white dark:bg-gray-900">
             </div>
 
             <!-- Container for node size metrics, bottom left (vertical) -->
             <div class="absolute left-0.5 bottom-0.5 flex flex-col px-2 z-10">
                 <button id="metric_indegree" class="group/1 w-fit border flex flex-row border-gray-800 dark:border-gray-200 py-2 px-2 my-2 rounded-md cursor-pointer inline-block hover:bg-gray-100 text-gray-800 dark:text-gray-200 dark:hover:bg-gray-800 bg-white dark:bg-gray-900">
-                    <ion-icon name="cloudy-outline" class="text-lg group-hover/1:translate-y-1"></ion-icon>
+                    <ion-icon name="arrow-back-outline" class="text-lg group-hover/1:translate-y-1"></ion-icon>
                     <span class="ml-2 text-md hidden group-hover/1:block">in-degree</span>
                 </button>
 
                 <button id="metric_outdegree" class="group/2 w-fit border flex flex-row border-gray-800 dark:border-gray-200 py-2 px-2 my-2 rounded-md cursor-pointer inline-block hover:bg-gray-100 text-gray-800 dark:text-gray-200 dark:hover:bg-gray-800 bg-white dark:bg-gray-900">
-                    <ion-icon name="cloudy-outline" class="text-lg group-hover/2:translate-y-1"></ion-icon>
+                    <ion-icon name="arrow-forward-outline" class="text-lg group-hover/2:translate-y-1"></ion-icon>
                     <span class="ml-2 text-md hidden group-hover/2:block">out-degree</span>
                 </button>
 
@@ -57,22 +63,22 @@
                 </button>
 
                 <button id="metric_close" class="group/4 w-fit border flex flex-row border-gray-800 dark:border-gray-200 py-2 px-2 my-2 rounded-md cursor-pointer inline-block hover:bg-gray-100 text-gray-800 dark:text-gray-200 dark:hover:bg-gray-800 bg-white dark:bg-gray-900">
-                    <ion-icon name="cloudy-outline" class="text-lg group-hover/4:translate-y-1"></ion-icon>
+                    <ion-icon name="code-outline" class="text-lg group-hover/4:translate-y-1"></ion-icon>
                     <span class="ml-2 text-md hidden group-hover/4:block">closeness centrality</span>
                 </button>
 
                 <button id="metric_degree" class="group/5 w-fit border flex flex-row border-gray-800 dark:border-gray-200 py-2 px-2 my-2 rounded-md cursor-pointer inline-block hover:bg-gray-100 text-gray-800 dark:text-gray-200 dark:hover:bg-gray-800 bg-white dark:bg-gray-900">
-                    <ion-icon name="cloudy-outline" class="text-lg group-hover/5:translate-y-1"></ion-icon>
+                    <ion-icon name="thermometer-outline" class="text-lg group-hover/5:translate-y-1"></ion-icon>
                     <span class="ml-2 text-md hidden group-hover/5:block">degree centrality</span>
                 </button>
 
                 <button id="metric_eigen" class="group/6 w-fit border flex flex-row border-gray-800 dark:border-gray-200 py-2 px-2 my-2 rounded-md cursor-pointer inline-block hover:bg-gray-100 text-gray-800 dark:text-gray-200 dark:hover:bg-gray-800 bg-white dark:bg-gray-900">
-                    <ion-icon name="cloudy-outline" class="text-lg group-hover/6:translate-y-1"></ion-icon>
+                    <ion-icon name="stats-chart-outline" class="text-lg group-hover/6:translate-y-1"></ion-icon>
                     <span class="ml-2 text-md hidden group-hover/6:block">eigenvector centrality</span>
                 </button>
 
                 <button id="metric_pagerank" class="group/7 w-fit border flex flex-row border-gray-800 dark:border-gray-200 py-2 px-2 my-2 rounded-md cursor-pointer inline-block hover:bg-gray-100 text-gray-800 dark:text-gray-200 dark:hover:bg-gray-800 bg-white dark:bg-gray-900">
-                    <ion-icon name="cloudy-outline" class="text-lg group-hover/7:translate-y-1"></ion-icon>
+                    <ion-icon name="trending-up-outline" class="text-lg group-hover/7:translate-y-1"></ion-icon>
                     <span class="ml-2 text-md hidden group-hover/7:block">pagerank</span>
                 </button>
             </div>
