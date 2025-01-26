@@ -3,19 +3,28 @@ import "https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js";
 import "https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js";
 import Graph from "graphology";
 import Sigma from "sigma";
-import { generateGraph, setHoveredNode, hoveredNeighbors, hoveredNode, selectedNode, suggestions } from "./graphGeneration.js";
+import { generateGraph, setHoveredNode, hoveredNeighbors, hoveredNode, selectedNode, suggestions, layoutManagement } from "./graphGeneration.js";
 
-export const sigmaInstance = new Sigma(new Graph({ multi: false }), document.getElementById("container"), {
-    renderLabels: false,
-});
+export var sigmaInstance;
 
-sigmaInstance.getCamera().setState({
-    angle: 0.2,
-});
+var clickedNode = null;
+
+const container  = document.getElementById("container");
+const sigmaContents = container.innerHTML;
 
 document.addEventListener('livewire:init', () => {
     Livewire.on('showDataset', (event) => {
         console.log("showDataset event fired with path:", event.path);
+        if (sigmaInstance != null) {
+            sigmaInstance.kill();
+            container.innerHTML = sigmaContents;
+        }
+        sigmaInstance = new Sigma(new Graph({ multi: false }), container, {
+            renderLabels: false,
+        });
+        sigmaInstance.getCamera().setState({
+            angle: 0.2,
+        });
 
         let filePath = event.path;
         let graphPromise = new Promise((resolve, reject) => {
@@ -36,16 +45,25 @@ document.addEventListener('livewire:init', () => {
 
                 const dispBox = document.getElementById("userDispbox")
 
-                sigmaInstance.on("enterNode", ({ node }) => {
-                    console.log(returnGraph.getNodeAttributes(node));
-                    Livewire.dispatch('update-userbox', returnGraph.getNodeAttributes(node));
-                    dispBox.style.display = "absolute";
+                sigmaInstance.on("clickNode", ({node}) => {
+                    clickedNode = (clickedNode == node) ? null : node; 
                     setHoveredNode(node);
                 });
 
+                sigmaInstance.on("enterNode", ({ node }) => {
+                    //console.log(returnGraph.getNodeAttributes(node));
+                    Livewire.dispatch('update-userbox', returnGraph.getNodeAttributes(node));
+                    dispBox.style.display = "absolute";
+                    if (clickedNode == null) {
+                        setHoveredNode(node);
+                    }
+                });
+
                 sigmaInstance.on("leaveNode", () => {
-                    dispBox.style.display = "none";
-                    setHoveredNode(null);
+                    if (clickedNode == null){
+                        dispBox.style.display = "none";
+                        setHoveredNode(null);
+                    }
                 });
 
                 sigmaInstance.setSetting("nodeReducer", (node, data) => {
@@ -96,6 +114,7 @@ document.addEventListener('livewire:init', () => {
                 console.log(returnError);
             }
         );
+        sigmaInstance.refresh();
     });
 });
 

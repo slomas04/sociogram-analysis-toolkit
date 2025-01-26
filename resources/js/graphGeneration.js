@@ -139,18 +139,10 @@ export async function generateGraph(path) {
 
 // Separate function for the management of layouts
 // Much of this is based on sigma.js's 'layouts example' storybook
-function layoutManagement(graph){
+export function layoutManagement(graph){
     const sensibleSettings = forceAtlas2.inferSettings(graph);
-    console.log(sensibleSettings);
     fa2Layout = new FA2Layout(graph, {
-        settings: {
-            barnesHutOptimize: false,
-            adjustSizes: false,
-            gravity: 0.01,
-            scalingRatio: 10,
-            slowDown: 5,
-            strongGravityMode: false,
-        },
+        settings: sensibleSettings,
     });
 
     fa2Worker = new fa2LayoutWorker();
