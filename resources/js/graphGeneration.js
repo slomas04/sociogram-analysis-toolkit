@@ -7,7 +7,7 @@ import FA2Layout from "graphology-layout-forceatlas2/worker"
 import NoverlapLayout from 'graphology-layout-noverlap/worker';
 import { animateNodes } from "sigma/utils";
 import { sortInDegree, sortOutDegree, sortBetween, sortClose, sortDegree, sortEigen, sortPagerank } from "./metricEvaluation.js";
-import { sigmaInstance } from "./app.js";
+import { sigmaInstance } from "./instanceManager.js";
 
 
 // Global variables for state management
@@ -66,7 +66,8 @@ function randomCoord() {
     return (Math.random() * 1000) - 500;
 }
 
-export async function generateGraph(path) {
+export async function generateGraph(path, onlyScanned, minIn, minOut) {
+
     graph = new Graph({  });
     const url = document.getElementsByName('base_url')[0].getAttribute('content') + "/storage/" + path;
     
@@ -91,20 +92,23 @@ export async function generateGraph(path) {
 
         if (user.hasOwnProperty('following')) {
             user['following'].forEach(function (fUser) {
-                if (!currentUsers.includes(fUser[0])) {
+                if (!currentUsers.includes(fUser[0]) && !onlyScanned) {
                     var followNodeLabel = anon ? fUser[0] : fUser[1];
                     graph.addNode(fUser[0], { label: followNodeLabel, x: randomCoord(), y: randomCoord(), size: 2, color: stringToColour(fUser[0]) });
                     currentUsers.push(fUser[0]);
                 }
-                if (!graph.hasEdge(user['id'], fUser[0])) {
+                if (!graph.hasEdge(user['id'], fUser[0]) && currentUsers.includes(fUser[0])) {
                     graph.addEdge(user['id'], fUser[0], { type: "arrow", color: userColour});
                 }
             });
         }
     });
 
+    minIn = Number(minIn);
+    minOut = Number(minOut);
+
     graph.forEachNode( node => {
-        if (graph.inDegree(node) == 1 && graph.outDegree(node) == 0) {
+        if (graph.inDegree(node) < minIn && graph.outDegree(node) < minOut) {
             graph.dropNode(node);
         }
     });

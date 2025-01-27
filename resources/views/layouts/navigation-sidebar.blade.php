@@ -2,11 +2,20 @@
 
     <div class="h-full flex flex-col justify-even">
 
-        <div class="w-full h-auto flex justify-center">
-            <a href="{{ route('dashboard') }}">
-                <x-application-logo class="inline-block h-16 w-auto fill-current text-gray-800 dark:text-gray-200
-                                           hover:bg-gray-200 hover:dark:bg-gray-700 m-4 p-3 rounded-lg" />
-            </a>
+        <div class="flex flex-row justify-between align-center">
+            <div class="w-full h-auto flex justify-center">
+                <a href="{{ route('dashboard') }}">
+                    <x-application-logo class="inline-block h-16 w-auto fill-current text-gray-800 dark:text-gray-200
+                                               hover:bg-gray-200 hover:dark:bg-gray-700 m-4 p-3 rounded-lg" />
+                </a>
+            </div>
+        </div>
+
+        <div class="items-baseline cursor-pointer m-4 absolute top-0 left-0">
+            <button id='toggle-theme' type="button" class="items-baseline text-white bg-gray-600 hover:text-gray-600 hover:bg-gray-500 dark:text-white dark:bg-gray-900 dark:hover:text-gray-900 dark:hover:bg-gray-700 rounded-lg p-2.5">
+                <ion-icon name="moon-outline" id="theme-toggle-dark-icon" class="text-xl translate-y-1 hidden" fill="currentColor"></ion-icon>
+                <ion-icon name="sunny-outline" id="theme-toggle-light-icon" class="text-xl translate-y-1 hidden" fill="currentColor"></ion-icon>
+            </button>
         </div>
 
         <div class="grow mx-2">

@@ -43,7 +43,30 @@
 
             <div class="absolute w-72 right-0.5 top-16 flex flex-col px-2 z-10"> 
                 <input id="searchbox" placeholder="Search for a node..." class="rounded-md text-gray-800 dark:text-gray-200 border border-2-0 border-gray-800 dark:border-gray-200 bg-white dark:bg-gray-900">
+                <div class="group/f hover:w-64 w-fit border flex flex-row justify-between border-gray-800 dark:border-gray-200 py-2 px-2 my-2 rounded-md cursor-pointer inline-block hover:bg-gray-100 text-gray-800 dark:text-gray-200 dark:hover:bg-gray-800 bg-white dark:bg-gray-900">
+                    <ion-icon name="funnel-outline" class="text-lg group-hover/f:translate-y-1"></ion-icon>
+                    <div class="hidden group-hover/f:block flex flex-col justify-end w-max">
+                        <span class="mx-2 text-xl flex">Filter</span>
+                        <span class="mx-2 text-sm flex">This will cause the page to reload!</span>
+                        <div class="mt-2 flex flex-col justify-end w-full">
+                            <div class="flex justify-between">
+                                <label class="text-sm text-gray-600 dark:text-gray-400">only show fully scraped nodes</label>
+                                <input type="checkbox" id="scrapedOnly" class="ml-2 mr-2">
+                            </div>
+                            <div class="flex justify-between">
+                                <input type="number" id="minIn" placeholder="minimum in-degree" class="my-2 rounded-md text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-900 mr-2">
+                            </div>
+                            <div class="flex justify-between">
+                                <input type="number" id="minOut" placeholder="minimum out-degree" class="rounded-md text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-900 mr-2">
+                            </div>
+                            <button id="reloadWithFilter" class=" w-fit border flex flex-row border-gray-800 dark:border-gray-200 py-2 px-2 my-2 rounded-md cursor-pointer inline-block hover:bg-gray-100 text-gray-800 dark:text-gray-200 dark:hover:bg-gray-800 bg-white dark:bg-gray-900">
+                                <span class="mx-2 text-md">Reload</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
+            
 
             <!-- Container for node size metrics, bottom left (vertical) -->
             <div class="absolute left-0.5 bottom-0.5 flex flex-col px-2 z-10">

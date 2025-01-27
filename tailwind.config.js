@@ -23,4 +23,5 @@ export default {
             display:["group-hover"],
         },
     },
+    darkMode: 'class',
 };
