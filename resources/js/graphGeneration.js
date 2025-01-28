@@ -8,7 +8,7 @@ import NoverlapLayout from 'graphology-layout-noverlap/worker';
 import { animateNodes } from "sigma/utils";
 import { sortInDegree, sortOutDegree, sortBetween, sortClose, sortDegree, sortEigen, sortPagerank } from "./metricEvaluation.js";
 import { sigmaInstance } from "./instanceManager.js";
-
+import { establishCommunities } from "./communityAssignment.js";
 
 // Global variables for state management
 let cancelCurrentAnimation = null;
@@ -86,7 +86,7 @@ export async function generateGraph(path, onlyScanned, minIn, minOut) {
         var userColour = stringToColour(user['id']);
         if (!currentUsers.includes(user['id'])) {
             var nodeLabel = anon ? user['id'] : user['username'];
-            graph.addNode(user['id'], { label: nodeLabel, x: randomCoord(), y: randomCoord(), size: 2, color: userColour });
+            graph.addNode(user['id'], { label: nodeLabel, x: randomCoord(), y: randomCoord(), size: 2 });
             currentUsers.push(user['id']);
         }
 
@@ -94,11 +94,11 @@ export async function generateGraph(path, onlyScanned, minIn, minOut) {
             user['following'].forEach(function (fUser) {
                 if (!currentUsers.includes(fUser[0]) && !onlyScanned) {
                     var followNodeLabel = anon ? fUser[0] : fUser[1];
-                    graph.addNode(fUser[0], { label: followNodeLabel, x: randomCoord(), y: randomCoord(), size: 2, color: stringToColour(fUser[0]) });
+                    graph.addNode(fUser[0], { label: followNodeLabel, x: randomCoord(), y: randomCoord(), size: 2 });
                     currentUsers.push(fUser[0]);
                 }
                 if (!graph.hasEdge(user['id'], fUser[0]) && currentUsers.includes(fUser[0])) {
-                    graph.addEdge(user['id'], fUser[0], { type: "arrow", color: userColour});
+                    graph.addEdge(user['id'], fUser[0], { type: "arrow"});
                 }
             });
         }
@@ -127,6 +127,8 @@ export async function generateGraph(path, onlyScanned, minIn, minOut) {
     });
 
     sortInDegree(graph);
+
+    graph = establishCommunities(graph);
 
     const searchBox = document.getElementById("searchbox");
 
@@ -201,6 +203,8 @@ export function layoutManagement(graph){
     degreeButton.addEventListener("click", () => { sortDegree(graph); });
     eigenButton.addEventListener("click", () => { sortEigen(graph); });
     pagerankButton.addEventListener("click", () => {sortPagerank(graph);});
+
+    fa2Worker.startFA2();
 
     return graph;
 }
