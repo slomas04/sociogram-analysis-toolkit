@@ -90,19 +90,36 @@ export async function generateGraph(path, onlyScanned, minIn, minOut) {
             currentUsers.push(user['id']);
         }
 
-        if (user.hasOwnProperty('following')) {
+        if (user.hasOwnProperty('following') && !onlyScanned) {
             user['following'].forEach(function (fUser) {
-                if (!currentUsers.includes(fUser[0]) && !onlyScanned) {
+                if (!currentUsers.includes(fUser[0])) {
                     var followNodeLabel = anon ? fUser[0] : fUser[1];
                     graph.addNode(fUser[0], { label: followNodeLabel, x: randomCoord(), y: randomCoord(), size: 2 });
                     currentUsers.push(fUser[0]);
                 }
-                if (!graph.hasEdge(user['id'], fUser[0]) && currentUsers.includes(fUser[0])) {
-                    graph.addEdge(user['id'], fUser[0], { type: "arrow"});
-                }
             });
         }
     });
+    // Second go-over for edges
+    if(onlyScanned){
+        jsonData['users'].forEach(function (user) {
+            if(currentUsers.includes(user['id']) && user.hasOwnProperty('following')){
+                user['following'].forEach(function (target) {
+                    if (currentUsers.includes(target[0]) && !graph.hasEdge(user['id'], target[0])){
+                        graph.addEdge(user['id'], target[0], {type: "arrow"});
+                    }
+                });
+            }
+        });
+    } else {
+        jsonData['users'].forEach(function (user) {
+            if(user.hasOwnProperty('following')){
+                user['following'].forEach(function (target) {
+                    graph.mergeEdge(user['id'], target[0], {type: "arrow"});
+                });
+            }
+        })
+    }
 
     minIn = Number(minIn);
     minOut = Number(minOut);
@@ -146,6 +163,8 @@ export async function generateGraph(path, onlyScanned, minIn, minOut) {
 // Separate function for the management of layouts
 // Much of this is based on sigma.js's 'layouts example' storybook
 export function layoutManagement(graph){
+    const positions = circular(graph, {scale: 1000});
+    circular.assign(graph);
     const sensibleSettings = forceAtlas2.inferSettings(graph);
     fa2Layout = new FA2Layout(graph, {
         settings: sensibleSettings,
