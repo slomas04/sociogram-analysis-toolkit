@@ -106,7 +106,7 @@
                 </button>
             </div>
 
-            <div class="absolute right-0.5 bottom-0.5 flex flex-col px-2 z-10">
+            <div class="absolute right-0.5 bottom-0.5 flex flex-col p-2 z-10 h-2/5">
                 @livewire('user-list', [], key("user-list"))
 
             </div>

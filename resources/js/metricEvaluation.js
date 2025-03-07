@@ -9,6 +9,7 @@ import pagerank from 'graphology-metrics/centrality/pagerank';
 const MIN_SIZE = 4;
 const MAX_SIZE = 30;
 const MINMAX_RANGE = MAX_SIZE - MIN_SIZE;
+const MAX_VALUES = 20;
 
 //Get max and min for any array
 Array.prototype.max = function() {
@@ -78,6 +79,7 @@ export function sortInDegree(graph){
             size: graph.inDegree(node) * 2,
           });
     });
+    setDisplayBox(graph, "in-degree", "in");
 }
 
 export function sortOutDegree(graph){
@@ -87,6 +89,7 @@ export function sortOutDegree(graph){
             size: (deg < 8) ? deg : deg / 8,
           });
     });
+    setDisplayBox(graph, "out-degree", "out");
 }
 
 export function sortBetween(graph){
@@ -125,5 +128,29 @@ export function sortPagerank(graph){
 }
 
 function setDisplayBox(graph, method, attribute){
-    console.log(attribute);
+    var objectArray = [];
+
+    if(attribute == "in"){
+        graph.forEachNode(node => {
+            var atts = graph.getNodeAttributes(node);
+            objectArray.push([atts['label'], graph.inDegree(node)]);
+        });
+    } else if(attribute == "out"){
+        graph.forEachNode(node => {
+            var atts = graph.getNodeAttributes(node);
+            objectArray.push([atts['label'], graph.outDegree(node)]);
+        });
+    } else {
+        graph.forEachNode(node => {
+            var atts = graph.getNodeAttributes(node);
+            objectArray.push([atts['label'], Number(atts[attribute].toPrecision(3))]);
+        });
+    }
+    
+    objectArray.sort((a, b) =>  a[1] - b[1] || a[0] - b[0]).reverse();
+    if(objectArray.length > MAX_VALUES){
+        objectArray = objectArray.slice(0,MAX_VALUES);
+    }
+    Livewire.dispatch('update-toptable', {sortString: method, currentArray: objectArray});
+
 }
