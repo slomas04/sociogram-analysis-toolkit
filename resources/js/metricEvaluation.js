@@ -35,6 +35,43 @@ function normalizeAndSet(vals, graph){
     });
 }
 
+function printSizes(graph){
+    graph.forEachNode(node => {
+        console.log(graph.getNodeAttribute(node, 'size'));
+    });
+}
+
+function getMinMaxAttribute(graph, attribute){
+    var min = Number.MAX_SAFE_INTEGER;
+    var max = 0;
+
+    graph.forEachNode(node => {
+        var att = graph.getNodeAttribute(node, attribute);
+        if (att > max){
+            max = att;
+        }
+        if (att < min){
+            min = att;
+        }
+    });
+
+    return [min, max];
+}
+
+function normalizeSize(graph, vals, attribute){
+    const vMax = vals[1];
+    const vMin = vals[0];
+    const vRange = vMax - vMin;
+
+    graph.forEachNode(node => {
+        graph.mergeNodeAttributes(node, {
+            size: MIN_SIZE + (((graph.getNodeAttribute(node, attribute) - vMin)*MINMAX_RANGE) / vRange),
+          });
+    });
+
+    //printSizes(graph);
+}
+
 export function sortInDegree(graph){
     graph.forEachNode(node => {
         graph.mergeNodeAttributes(node, {
@@ -53,26 +90,40 @@ export function sortOutDegree(graph){
 }
 
 export function sortBetween(graph){
-    const centralities = Object.values(betweennessCentrality(graph));
-    normalizeAndSet(centralities, graph);
+    var att = "betweennessCentrality";
+    betweennessCentrality.assign(graph);
+    normalizeSize(graph, getMinMaxAttribute(graph, att), att);
+    setDisplayBox(graph, "betweenness centrality", att);
 }
 
 export function sortClose(graph){
-    const closenesses = Object.values(closenessCentrality(graph));
-    normalizeAndSet(closenesses,graph);
+    var att = "closenessCentrality";
+    closenessCentrality.assign(graph);
+    normalizeSize(graph, getMinMaxAttribute(graph, att), att);
+    setDisplayBox(graph, "closeness centrality", att);
 }
 
 export function sortDegree(graph){
-    const degreeCentralities = Object.values(degreeCentrality(graph));
-    normalizeAndSet(degreeCentralities, graph);
+    var att = "degreeCentrality";
+    degreeCentrality.assign(graph);
+    normalizeSize(graph, getMinMaxAttribute(graph, att), att);
+    setDisplayBox(graph, "degree centrality", att);
 }
 
 export function sortEigen(graph){
-    const eigens = Object.values(eigenvectorCentrality(graph));
-    normalizeAndSet(eigens, graph);
+    var att = "eigenvectorCentrality";
+    eigenvectorCentrality.assign(graph);
+    normalizeSize(graph, getMinMaxAttribute(graph, att), att);
+    setDisplayBox(graph, "eigenvector centrality", att);
 }
 
 export function sortPagerank(graph){
-    const pageRanking = Object.values(pagerank(graph));
-    normalizeAndSet(pageRanking, graph);
+    var att = "pagerank";
+    pagerank.assign(graph);
+    normalizeSize(graph, getMinMaxAttribute(graph, att), att);
+    setDisplayBox(graph, "pagerank", att);
+}
+
+function setDisplayBox(graph, method, attribute){
+    console.log(attribute);
 }

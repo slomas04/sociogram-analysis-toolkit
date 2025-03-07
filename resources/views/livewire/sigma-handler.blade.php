@@ -105,6 +105,11 @@
                     <span class="ml-2 text-md hidden group-hover/7:block">pagerank</span>
                 </button>
             </div>
+
+            <div class="absolute right-0.5 bottom-0.5 flex flex-col px-2 z-10">
+                @livewire('user-list', [], key("user-list"))
+
+            </div>
         </div>
     @endif
 </div>
