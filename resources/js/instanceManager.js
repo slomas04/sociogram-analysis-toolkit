@@ -5,8 +5,12 @@ import Sigma from "sigma";
 export var sigmaInstance;
 
 var clickedNode = null;
+var draggedNode = null;
+
 const container  = document.getElementById("container");
 const sigmaContents = container.innerHTML;
+
+
 
 export function setupInstance(path, onlyScanned, minIn, minOut){
     if (minIn == null) minIn = 2;

@@ -1,13 +1,13 @@
 import betweennessCentrality from 'graphology-metrics/centrality/betweenness';
 import closenessCentrality from 'graphology-metrics/centrality/closeness';
-import { degreeCentrality } from 'graphology-metrics/centrality/degree';
+import { inDegreeCentrality, outDegreeCentrality, degreeCentrality } from 'graphology-metrics/centrality/degree';
 import eigenvectorCentrality from 'graphology-metrics/centrality/eigenvector';
 import pagerank from 'graphology-metrics/centrality/pagerank';
 
 
 
-const MIN_SIZE = 4;
-const MAX_SIZE = 30;
+const MIN_SIZE = 1.5;
+const MAX_SIZE = 15;
 const MINMAX_RANGE = MAX_SIZE - MIN_SIZE;
 const MAX_VALUES = 20;
 
@@ -74,21 +74,16 @@ function normalizeSize(graph, vals, attribute){
 }
 
 export function sortInDegree(graph){
-    graph.forEachNode(node => {
-        graph.mergeNodeAttributes(node, {
-            size: graph.inDegree(node) * 2,
-          });
-    });
+    var att = "inDegreeCentrality";
+    inDegreeCentrality.assign(graph);
+    normalizeSize(graph, getMinMaxAttribute(graph, att), att);
     setDisplayBox(graph, "in-degree", "in");
 }
 
 export function sortOutDegree(graph){
-    graph.forEachNode(node => {
-        var deg = graph.outDegree(node)
-        graph.mergeNodeAttributes(node, {
-            size: (deg < 8) ? deg : deg / 8,
-          });
-    });
+    var att = "outDegreeCentrality";
+    outDegreeCentrality.assign(graph);
+    normalizeSize(graph, getMinMaxAttribute(graph, att), att);
     setDisplayBox(graph, "out-degree", "out");
 }
 

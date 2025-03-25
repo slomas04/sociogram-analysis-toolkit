@@ -1,6 +1,6 @@
 export function setupThemeToggle(){
-    document.documentElement.classList.add('dark');
-    localStorage.setItem('color-theme', 'dark');
+    document.documentElement.classList.add('light');
+    localStorage.setItem('color-theme', 'light');
     var themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
     var themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
 
