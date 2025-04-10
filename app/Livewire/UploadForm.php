@@ -17,7 +17,7 @@ class UploadForm extends Component
     public $isUploading = false; 
 
     protected $rules = [
-        'file' => 'required|file|mimes:json|max:40960', // Max 10MB for the uploaded file
+        'file' => 'required|file|mimes:json|max:40960',
         'isGlobal' => 'boolean', 
     ];
 
@@ -29,7 +29,7 @@ class UploadForm extends Component
 
         $file = $this->file;
         $fileContents = file_get_contents($file->getRealPath());
-        $decodedJson = json_decode($fileContents, true);
+        $decodedJson = json_decode($fileContents, true); // Validate JSON
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             $this->message = 'JSON format invalid! ' . json_last_error_msg();

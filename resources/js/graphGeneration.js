@@ -30,10 +30,6 @@ async function getJsonData(url) {
     return await response.json();
 }
 
-function randomColour() {
-    return "#" + Math.floor(Math.random() * 16777215).toString(16);
-}
-
 export function setHoveredNode(val){
     if (val == null){
         hoveredNode = null;
@@ -46,21 +42,6 @@ export function setHoveredNode(val){
         skipIndexation: true,
       });
 }
-
-// Hashes a string into a valid colour
-// function taken directly from https://stackoverflow.com/questions/3426404/create-a-hexadecimal-colour-based-on-a-string-with-javascript
-export function stringToColour(str){
-    let hash = 0;
-    str.split('').forEach(char => {
-      hash = char.charCodeAt(0) + ((hash << 5) - hash)
-    })
-    let colour = '#'
-    for (let i = 0; i < 3; i++) {
-      const value = (hash >> (i * 8)) & 0xff
-      colour += value.toString(16).padStart(2, '0')
-    }
-    return colour
-  }
 
 function randomCoord() {
     return (Math.random() * 1000) - 500;
@@ -82,14 +63,15 @@ export async function generateGraph(path, onlyScanned, minIn, minOut) {
     const anon = jsonData['anonymous'];
     var currentUsers = [];
 
+    // First parse for adding Nodes
     jsonData['users'].forEach(function (user) {
-        var userColour = stringToColour(user['id']);
         if (!currentUsers.includes(user['id'])) {
             var nodeLabel = anon ? user['id'] : user['username'];
             graph.addNode(user['id'], { label: nodeLabel, x: randomCoord(), y: randomCoord(), size: 2 });
             currentUsers.push(user['id']);
         }
 
+        // Add nodes for following of each node if onlyScanned is false
         if (user.hasOwnProperty('following') && !onlyScanned) {
             user['following'].forEach(function (fUser) {
                 if (!currentUsers.includes(fUser[0])) {
@@ -100,26 +82,19 @@ export async function generateGraph(path, onlyScanned, minIn, minOut) {
             });
         }
     });
+
     // Second go-over for edges
-    if(onlyScanned){
-        jsonData['users'].forEach(function (user) {
-            if(currentUsers.includes(user['id']) && user.hasOwnProperty('following')){
-                user['following'].forEach(function (target) {
-                    if (currentUsers.includes(target[0]) && !graph.hasEdge(user['id'], target[0])){
-                        graph.addEdge(user['id'], target[0], {type: "arrow"});
-                    }
-                });
-            }
-        });
-    } else {
-        jsonData['users'].forEach(function (user) {
-            if(user.hasOwnProperty('following')){
-                user['following'].forEach(function (target) {
+    jsonData['users'].forEach(function (user) {
+        if(user.hasOwnProperty('following')){
+            user['following'].forEach(function (target) {
+
+                // if onlyScanned is set, target node must already be in graph
+                if (currentUsers.includes(target[0]) || !onlyScanned){
                     graph.mergeEdge(user['id'], target[0], {type: "arrow"});
-                });
-            }
-        })
-    }
+                } 
+            });
+        }
+    });
 
     minIn = Number(minIn);
     minOut = Number(minOut);
