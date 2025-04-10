@@ -1,6 +1,6 @@
 import './bootstrap';
-import "https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js";
-import "https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js";
+import "https://cdn.jsdelivr.net/npm/ionicons@latest/dist/ionicons/ionicons.esm.js";
+
 import { setupInstance } from './instanceManager.js';
 import { setupThemeToggle } from "./themeToggle.js";
 
