@@ -31,10 +31,16 @@
                         Random Layout
                     </span>
                 </button>
-                <button id="layout_circular" class="border border-l-0 border-gray-800 dark:border-gray-200 p-2 my-2 rounded-r-md cursor-pointer inline-block hover:bg-gray-100 dark:hover:bg-gray-800 bg-white dark:bg-gray-900"> 
+                <button id="layout_circular" class="border border-y-1 border-l-0 border-gray-800 dark:border-gray-200 p-2 my-2 cursor-pointer inline-block hover:bg-gray-100 dark:hover:bg-gray-800 bg-white dark:bg-gray-900"> 
                     <span class="text-gray-800 dark:text-gray-200">
                         <ion-icon name="ellipse-outline" class="text-xl translate-y-1"></ion-icon>
                         Circular Layout
+                    </span>
+                </button>
+                <button id="layout_pack" class="border border-l-0 border-gray-800 dark:border-gray-200 p-2 my-2 rounded-r-md cursor-pointer inline-block hover:bg-gray-100 dark:hover:bg-gray-800 bg-white dark:bg-gray-900"> 
+                    <span class="text-gray-800 dark:text-gray-200">
+                        <ion-icon name="balloon-outline" class="text-xl translate-y-1"></ion-icon>
+                        Bubble Layout
                     </span>
                 </button>
 

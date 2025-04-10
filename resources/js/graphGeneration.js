@@ -2,18 +2,15 @@
 import "https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js";
 import Graph from "graphology";
 import forceAtlas2 from "graphology-layout-forceatlas2";
-import { circular } from "graphology-layout";
 import FA2Layout from "graphology-layout-forceatlas2/worker"
 import NoverlapLayout from 'graphology-layout-noverlap/worker';
-import { animateNodes } from "sigma/utils";
+
 import { sortInDegree, sortOutDegree, sortBetween, sortClose, sortDegree, sortEigen, sortPagerank } from "./metricEvaluation.js";
 import { sigmaInstance } from "./instanceManager.js";
 import { establishCommunities } from "./communityAssignment.js";
+import {LayoutWorker, randomiseLayout, circularLayout, circlePack} from "./layoutWorker.js";
 
 // Global variables for state management
-let cancelCurrentAnimation = null;
-let fa2Layout = null;
-let noverlapLayout = null;
 let fa2Worker = null;
 let noverlapWorker = null;
 export let suggestions = null;
@@ -43,7 +40,7 @@ export function setHoveredNode(val){
       });
 }
 
-function randomCoord() {
+export function randomCoord() {
     return (Math.random() * 1000) - 500;
 }
 
@@ -138,48 +135,42 @@ export async function generateGraph(path, onlyScanned, minIn, minOut) {
 // Separate function for the management of layouts
 // Much of this is based on sigma.js's 'layouts example' storybook
 export function layoutManagement(graph){
+
     const sensibleSettings = forceAtlas2.inferSettings(graph);
     console.log(sensibleSettings);
-    fa2Layout = new FA2Layout(graph, {
+    var fa2Layout = new FA2Layout(graph, {
         settings: sensibleSettings,
     });
-    
-    fa2Worker = new fa2LayoutWorker();
-    noverlapLayout = new NoverlapLayout(graph, {maxIterations: 50, settings: {
+
+    var noverlapLayout = new NoverlapLayout(graph, {maxIterations: 50, settings: {
         speed: 50, 
         expansion: 1.1,
         margin: 5,
         ration: 2.0,
     }});
-    noverlapWorker = new NoverlapWorker();
+
+    // Create layoutworker instances for each worker layout
+    fa2Worker = new LayoutWorker({
+        layoutInstance: fa2Layout,
+        startLabelId: "fa2_start",
+        stopLabelId: "fa2_stop",
+        buttonId: "layout_fa2"
+    });
     
-
-    function randomiseLayout(){
-        if (fa2Layout.isRunning()) fa2Worker.stopFA2();
-        if (noverlapLayout.isRunning()) noverlapWorker.stopNoverlap();
-        cancelCurrentAnimation = null;
-
-        const randomPositions = {}
-        graph.forEachNode(node => {
-            randomPositions[node] = { x: randomCoord(), y: randomCoord() }
-        });
-        cancelCurrentAnimation = animateNodes(graph, randomPositions, { duration: 2000 });
-    }
-
-    function circularLayout(){
-        if (fa2Layout.isRunning()) fa2Worker.stopFA2();
-        if (noverlapLayout.isRunning()) noverlapWorker.stopNoverlap();
-        cancelCurrentAnimation = null;
-
-        const circularPositions = circular(graph, { scale: 100 });
-        cancelCurrentAnimation = animateNodes(graph, circularPositions, { duration: 2000, easing: "linear" });
-    }
+    noverlapWorker = new LayoutWorker({
+        layoutInstance: noverlapLayout,
+        startLabelId: "noverlap_start",
+        stopLabelId: "noverlap_stop",
+        buttonId: "layout_noverlap"
+    });
 
     
     const randomButton = document.getElementById("layout_random");
-    randomButton.addEventListener("click", randomiseLayout);
     const circleButton = document.getElementById("layout_circular");
-    circleButton.addEventListener("click", circularLayout);
+    const packButton = document.getElementById("layout_pack");
+    randomButton.addEventListener("click", () => randomiseLayout(graph));
+    circleButton.addEventListener("click", () => circularLayout(graph));
+    packButton.addEventListener("click", () => circlePack(graph));
 
     const inDegreeButton = document.getElementById("metric_indegree");
     const outDegreeButton = document.getElementById("metric_outdegree");
@@ -197,71 +188,9 @@ export function layoutManagement(graph){
     eigenButton.addEventListener("click", () => { sortEigen(graph); });
     pagerankButton.addEventListener("click", () => {sortPagerank(graph);});
 
-    fa2Worker.startFA2();
+    fa2Worker.start();
 
     return graph;
-}
-
-class fa2LayoutWorker {
-    stopFA2() {
-        fa2Layout.stop();
-        this.FA2StartLabel.style.display = "flex";
-        this.FA2StopLabel.style.display = "none";
-    }
-
-    startFA2() {
-        noverlapWorker.stopNoverlap();
-        if (cancelCurrentAnimation) cancelCurrentAnimation();
-        fa2Layout.start();
-        this.FA2StartLabel.style.display = "none";
-        this.FA2StopLabel.style.display = "flex";
-    }
-
-    toggleFA2Layout = () => {
-        if (fa2Layout.isRunning()) {
-            this.stopFA2();
-        } else {
-            this.startFA2();
-        }
-    }
-
-    constructor() {
-        this.FA2StartLabel = document.getElementById("fa2_start");
-        this.FA2StopLabel = document.getElementById("fa2_stop");
-        this.fa2button = document.getElementById("layout_fa2");
-        this.fa2button.addEventListener("click", this.toggleFA2Layout); 
-    }
-}
-
-class NoverlapWorker {
-    stopNoverlap() {
-        noverlapLayout.stop();
-        this.NoverlapStartLabel.style.display = "flex";
-        this.NoverlapStopLabel.style.display = "none";
-    }
-
-    startNoverlap() {
-        fa2Worker.stopFA2();
-        if (cancelCurrentAnimation) cancelCurrentAnimation();
-        noverlapLayout.start();
-        this.NoverlapStartLabel.style.display = "none";
-        this.NoverlapStopLabel.style.display = "flex";
-    }
-
-    toggleNoverlapLayout = () => {
-        if (noverlapLayout.isRunning()) {
-            this.stopNoverlap();
-        } else {
-            this.startNoverlap();
-        }
-    }
-
-    constructor() {
-        this.NoverlapStartLabel = document.getElementById("noverlap_start");
-        this.NoverlapStopLabel = document.getElementById("noverlap_stop");
-        this.noverlapbutton = document.getElementById("layout_noverlap");
-        this.noverlapbutton.addEventListener("click", this.toggleNoverlapLayout); 
-    }
 }
 
 function setSearchQuery(query){
@@ -295,3 +224,4 @@ function setSearchQuery(query){
         skipIndexation: true,
       });
 }
+

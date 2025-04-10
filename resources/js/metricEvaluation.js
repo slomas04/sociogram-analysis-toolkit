@@ -4,7 +4,7 @@ import { inDegreeCentrality, outDegreeCentrality, degreeCentrality } from 'graph
 import eigenvectorCentrality from 'graphology-metrics/centrality/eigenvector';
 import pagerank from 'graphology-metrics/centrality/pagerank';
 
-
+export var currentAtt = "inDegreeCentrality";
 
 const MIN_SIZE = 1.5;
 const MAX_SIZE = 15;
@@ -124,6 +124,7 @@ export function sortPagerank(graph){
 
 function setDisplayBox(graph, method, attribute){
     var objectArray = [];
+    currentAtt = attribute;
 
     if(attribute == "in"){
         graph.forEachNode(node => {

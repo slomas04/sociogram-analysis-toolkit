@@ -49,6 +49,7 @@ export function setupInstance(path, onlyScanned, minIn, minOut){
             const dispBox = document.getElementById("userDispbox")
 
             sigmaInstance.on("clickNode", ({node}) => {
+                console.log(returnGraph.getNodeAttributes(node));
                 clickedNode = (clickedNode == node) ? null : node; 
                 setHoveredNode(node);
             });
