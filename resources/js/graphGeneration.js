@@ -143,15 +143,7 @@ export function layoutManagement(graph){
     const sensibleSettings = forceAtlas2.inferSettings(graph);
     console.log(sensibleSettings);
     fa2Layout = new FA2Layout(graph, {
-        settings: {
-            barnesHutOptimize: true,
-            barnesHutTheta: 1,
-            strongGravityMode: false,
-            outboundAttractionDistribution: true,
-            gravity: 0.05,
-            scalingRatio: 2,
-            slowDown: sensibleSettings.slowDown / 2,
-        },
+        settings: sensibleSettings,
     });
     
     fa2Worker = new fa2LayoutWorker();
