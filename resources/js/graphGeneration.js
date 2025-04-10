@@ -138,8 +138,6 @@ export async function generateGraph(path, onlyScanned, minIn, minOut) {
 // Separate function for the management of layouts
 // Much of this is based on sigma.js's 'layouts example' storybook
 export function layoutManagement(graph){
-    const positions = circular(graph, {scale: 1000});
-    circular.assign(graph);
     const sensibleSettings = forceAtlas2.inferSettings(graph);
     console.log(sensibleSettings);
     fa2Layout = new FA2Layout(graph, {
