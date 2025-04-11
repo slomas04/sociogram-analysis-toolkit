@@ -69,8 +69,6 @@ function normalizeSize(graph, vals, attribute){
             size: MIN_SIZE + (((graph.getNodeAttribute(node, attribute) - vMin)*MINMAX_RANGE) / vRange),
           });
     });
-
-    //printSizes(graph);
 }
 
 export function sortInDegree(graph){
