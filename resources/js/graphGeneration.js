@@ -17,7 +17,7 @@ export let suggestions = null;
 let graph = null;
 export let selectedNode = null;
 export let hoveredNode = null;
-export let hoveredNeighbors = null;
+export let clickedNeighbors = null;
 
 async function getJsonData(url) {
     const response = await fetch(url);
@@ -30,10 +30,10 @@ async function getJsonData(url) {
 export function setHoveredNode(val){
     if (val == null){
         hoveredNode = null;
-        hoveredNeighbors = null;
+        clickedNeighbors = null;
     } else {
         hoveredNode = val;
-        hoveredNeighbors = new Set(graph.neighbors(val)); 
+        clickedNeighbors = new Set(graph.neighbors(val)); 
     }
     sigmaInstance.refresh({
         skipIndexation: true,

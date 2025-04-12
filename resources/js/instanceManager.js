@@ -1,4 +1,4 @@
-import { generateGraph, setHoveredNode, hoveredNeighbors, hoveredNode, selectedNode, suggestions, layoutManagement } from "./graphGeneration.js";
+import { generateGraph, setHoveredNode, clickedNeighbors, hoveredNode, selectedNode, suggestions, layoutManagement } from "./graphGeneration.js";
 import Graph from "graphology";
 import Sigma from "sigma";
 
@@ -55,10 +55,8 @@ export function setupInstance(path, onlyScanned, minIn, minOut){
             });
 
             sigmaInstance.on("enterNode", ({ node }) => {
-                //console.log(returnGraph.getNodeAttributes(node));
                 Livewire.dispatch('update-userbox', returnGraph.getNodeAttributes(node));
                 dispBox.style.display = "absolute";
-
             });
 
             sigmaInstance.on("leaveNode", () => {
@@ -80,14 +78,18 @@ export function setupInstance(path, onlyScanned, minIn, minOut){
 function setReducers(returnGraph){
     sigmaInstance.setSetting("nodeReducer", (node, data) => {
         const res = { ...data };
-    
-        if (hoveredNeighbors && !hoveredNeighbors.has(node) && hoveredNode !== node) {
+
+        // Hide if node clicked but this isn't a neighbour
+        if (clickedNeighbors && !clickedNeighbors.has(node) && hoveredNode !== node) {
           res.label = "";
           res.hidden=true;
         }
-    
+        
+        // Highlight if selected
         if (selectedNode === node) {
           res.highlighted = true;
+
+        // Hide if not in search query
         } else if (suggestions) {
           if (suggestions.has(node)) {
             res.forceLabel = true;
@@ -102,21 +104,14 @@ function setReducers(returnGraph){
 
     sigmaInstance.setSetting("edgeReducer", (edge, data) => {
         const res = { ...data };
-    
-        if (
-          hoveredNode &&
-          !returnGraph.extremities(edge).every((n) => n === hoveredNode || returnGraph.areNeighbors(n, hoveredNode))
-        ) {
-          res.hidden = true;
+        // Get source and target nodes for edge
+        var source = returnGraph.source(edge)
+        var target = returnGraph.target(edge)
+
+        // Hide if either are hidden
+        if(source.hidden || target.hidden){
+          res.hidden = true
         }
-    
-        if (
-          suggestions &&
-          (!suggestions.has(returnGraph.source(edge)) || !suggestions.has(returnGraph.target(edge)))
-        ) {
-          res.hidden = true;
-        }
-    
         return res;
       });
 }
